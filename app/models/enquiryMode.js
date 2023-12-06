@@ -27,6 +27,10 @@ const enquirymodeSchema = new mongoose.Schema({
   updatedBy: {
     type: String,
   },
+  isDeleted:{
+    type:Boolean,
+    default:false
+  }
 });
 
 const Enquirymode = mongoose.model('Enquirymode', enquirymodeSchema);

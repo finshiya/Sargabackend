@@ -138,41 +138,28 @@ exports.GetSingleUserRoleController = async (req, res) => {
 };
 
 
-// delete 
-exports.SoftDelete = async (req, res) => {
+
+
+// Delete EnquiryType by ID
+exports.softDeleteUserRole = async (req, res) => {
   try {
-      const { id } = req.params;
-
-      // Check if id is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).send({
-              success: false,
-              message: 'Invalid ID format',
-          });
-      }
-
-      const userRole = await UserRole.findByIdAndDelete(id, 
-        { isDeleted: true, updatedAt: Date.now() },
-      { new: true, runValidators: true });
-
-      if (!userRole) {
-          return res.status(404).send({
-              success: false,
-              message: 'UserRole not found',
-          });
-      }
-
-      res.status(200).send({
-          success: true,
-          message: 'Successfully deleted the UserRole',
-          userRole,
-      });
+    const { id } = req.params;
+    const Userrole = await UserRole.findByIdAndUpdate(
+      id,
+      { isDeleted: true, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    );
+    res.status(200).send({
+      success: true,
+      message: "Successfully deleted the UserRole",
+      Userrole,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).send({
-          success: false,
-          message: 'Error in deleting the UserRole',
-          error,
-      });
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in deleting the UserRole",
+      error,
+    });
   }
 };

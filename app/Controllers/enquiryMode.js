@@ -26,6 +26,7 @@ exports.createEnquiryModeController = async (req, res) => {
       status: 'Pending',
       createdAt: new Date(),
       updatedBy: req.id,
+      isDeleted: false
     }).save();
 
     res.status(201).send({
@@ -132,37 +133,63 @@ exports.getSingleEnquiryModeController = async (req, res) => {
   }
 };
 
-// Delete Enquiry Mode by ID
-exports.deleteEnquiryModeController = async (req, res) => {
+// // Delete Enquiry Mode by ID
+// exports.deleteEnquiryModeController = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).send({
+//         success: false,
+//         message: 'Invalid ID format',
+//       });
+//     }
+
+//     const enquiryMode = await Enquirymode.findByIdAndDelete(id);
+
+//     if (!enquiryMode) {
+//       return res.status(404).send({
+//         success: false,
+//         message: 'Enquiry mode not found',
+//       });
+//     }
+
+//     res.status(200).send({
+//       success: true,
+//       message: 'Successfully deleted the enquiry mode',
+//       enquiryMode,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({
+//       success: false,
+//       message: 'Error in deleting the enquiry mode',
+//       error,
+//     });
+//   }
+// };
+
+
+// Delete Enquiry by ID
+exports.softDeleteEnquirymode = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        success: false,
-        message: 'Invalid ID format',
-      });
-    }
-
-    const enquiryMode = await Enquirymode.findByIdAndDelete(id);
-
-    if (!enquiryMode) {
-      return res.status(404).send({
-        success: false,
-        message: 'Enquiry mode not found',
-      });
-    }
+    const enquirymode = await Enquirymode.findByIdAndUpdate(id, 
+     { isDeleted: true, updatedAt: Date.now() },
+     { new: true, runValidators: true })
+   
 
     res.status(200).send({
       success: true,
-      message: 'Successfully deleted the enquiry mode',
-      enquiryMode,
+      message: "Successfully deleted the Enquirymode",
+      enquirymode,
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).send({
       success: false,
-      message: 'Error in deleting the enquiry mode',
+      message: "Error in deleting the Enquirymode",
       error,
     });
   }

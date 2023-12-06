@@ -24,6 +24,7 @@ exports.CreateEnquirySourceController = async (req, res) => {
       status: "Pending", // Default status
       createdAt: new Date(), // Set the creation date/time
       updatedBy: req.id, // Set the user ID of the person making the request
+      isDeleted: false
   }).save();
 
     res.status(201).send({
@@ -134,39 +135,65 @@ exports.GetSingleEnquirySourceController = async (req, res) => {
 };
 
 
-// delete 
-exports.DeleteEnquirySourceController = async (req, res) => {
+// // delete 
+// exports.DeleteEnquirySourceController = async (req, res) => {
+//   try {
+//       const { id } = req.params;
+
+//       // Check if id is a valid ObjectId
+//       if (!mongoose.Types.ObjectId.isValid(id)) {
+//           return res.status(400).send({
+//               success: false,
+//               message: 'Invalid ID format',
+//           });
+//       }
+
+//       const enquirySource = await EnquirySource.findByIdAndDelete(id);
+
+//       if (!enquirySource) {
+//           return res.status(404).send({
+//               success: false,
+//               message: 'Enquirysource not found',
+//           });
+//       }
+
+//       res.status(200).send({
+//           success: true,
+//           message: 'Successfully deleted the enquirysource',
+//           enquirySource,
+//       });
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).send({
+//           success: false,
+//           message: 'Error in deleting the enquirysource',
+//           error,
+//       });
+//   }
+// };
+
+
+// Delete Enquiry by ID
+exports.softDeleteEnquirysource = async (req, res) => {
   try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      // Check if id is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).send({
-              success: false,
-              message: 'Invalid ID format',
-          });
-      }
+    const enquirysource = await EnquirySource.findByIdAndUpdate(id, 
+     { isDeleted: true, updatedAt: Date.now() },
+     { new: true, runValidators: true })
+   
 
-      const enquirySource = await EnquirySource.findByIdAndDelete(id);
-
-      if (!enquirySource) {
-          return res.status(404).send({
-              success: false,
-              message: 'Enquirysource not found',
-          });
-      }
-
-      res.status(200).send({
-          success: true,
-          message: 'Successfully deleted the enquirysource',
-          enquirySource,
-      });
+    res.status(200).send({
+      success: true,
+      message: "Successfully deleted the Enquirymode",
+      enquirysource,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).send({
-          success: false,
-          message: 'Error in deleting the enquirysource',
-          error,
-      });
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in deleting the Enquirymode",
+      error,
+    });
   }
 };

@@ -2,11 +2,11 @@ const User = require("../models/user");
 const { hashPassword,comparePassword } = require("../helpers/authHelper");
 const JWT =  require('jsonwebtoken');
 
-
+ 
 // Create User
 exports.CreateUserController = async (req, res) => {
   try {
-    const { fname,lname, email , mobile, password,userType,  userRoles,} = req.body;
+    const { fname,lname, email , mobile, password,userType,userRoles} = req.body;
 
     if (!fname  ) {
       return res.send({ error: "FirstName is Required" });
