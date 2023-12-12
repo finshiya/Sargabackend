@@ -49,38 +49,36 @@ exports.CreateUserRoleController = async (req, res) => {
 
 // Updated EnquirySource
 exports.UpdateUserRoleController = async (req, res) => {
-    try{
-        const {id} = req.params;
-        const updatedData = req.body;
+  try {
+      const { id } = req.params;
+      const updatedData = req.body;
 
+      const userRole = await UserRole.findByIdAndUpdate(id, updatedData, {
+          new: true,
+          runValidators: true,
+      });
 
-        const UserRole = await UserRole.findByIdAndUpdate(id,updatedData,
-            {
-              new: true, 
-              runValidators: true, 
-              })
+      if (!userRole) {
+          return res.status(404).send({
+              success: false,
+              message: "UserRole not found",
+          });
+      }
 
-              if (!UserRole) {
-                return res.status(404).send({
-                  success: false,
-                  message: "UserRole not found",
-                });
-              }
-              res.status(200).send({
-                success: true,
-                message: "Successfully updated the userroles",
-                userRole:updatedData,
-              });
-    }catch (error) {
-        console.log(error);
-        res.status(500).send({
+      res.status(200).send({
+          success: true,
+          message: "Successfully updated the userroles",
+          userRole: userRole,
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(500).send({
           success: false,
           message: "Error in updating the userrole",
           error,
-        });
-      }
+      });
+  }
 };
-
 
 // Get all Enquiries
 exports.GetAllUserRoleController = async (req, res) => {
