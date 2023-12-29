@@ -10,7 +10,10 @@ name: {
   type: String,
   required: true,
 },
-
+status: {
+  type: String,
+    enum:['new','active','pending','blocked','converted']
+  },
   createdAt: {
     type: Date,
     default: Date.now,

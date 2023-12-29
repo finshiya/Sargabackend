@@ -16,6 +16,7 @@ exports.createOrgType = async (req, res) => {
     const orgType = await new OrgType({
       name,
       descp,
+      status: 'new',
       createdBy :'admin',
       updatedBy :'admin',
       createdAt: new Date().toISOString(),
@@ -40,7 +41,7 @@ exports.createOrgType = async (req, res) => {
 // Get all Organization Types
 exports.getAllOrgTypes = async (req, res) => {
   try {
-    const orgType = await OrgType.find().sort({ createdAt: -1 });
+    const orgType = await OrgType.find({isDeleted:false}).sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
       message: 'All organization types',
@@ -152,84 +153,3 @@ exports.softDeleteOrgType = async (req, res) => {
     }
   };
 
-
-// Hard Delete Organization Type by ID
-
-/*exports.hardDeleteOrgType = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const orgType = await OrgType.findByIdAndRemove(id);
-  
-      if (!orgType) {
-        return res.status(404).send({
-          success: false,
-          message: 'Organization type not found',
-        });
-      }
-  
-      res.status(200).send({
-        success: true,
-        message: 'Successfully hard-deleted the organization type',
-        orgType,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        success: false,
-        message: 'Error in hard-deleting the organization type',
-        error,
-      });
-    }
-  };
-*/
-
-
-// GET FULL COUNT OF user (including soft-deleted)
-exports.findTotalOrgType = async (req, res) => {
-    try {
-      const { keyword } = req.query;
-      const query = keyword ? { name: { $regex: keyword, $options: 'i' } } : {};
-   
-      const orgType = await OrgType.countDocuments(query);
-      res.status(200).send({
-        success: true,
-        message: "Successfully found the count",
-        orgType,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        success: false,
-        message: "Error in counting the OrgType",
-        error,
-      });
-    }
-  };
-  
-
-  
-// GET COUNT OF ACTIVE OrgType (excluding soft-deleted)
-/*exports.findActiveOrgTypeCount = async (req, res) => {
-    try {
-      const { keyword } = req.query;
-      const query = keyword ? { Name: { $regex: keyword, $options: 'i' }, IsDeleted: false } : { IsDeleted: false };
-     
-      const activeOrgTypeCount = await OrgType.countDocuments(query);
-      res.status(200).send({
-        success: true,
-        message: "Successfully found the count of active OrgType",
-        activeOrgTypeCount,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        success: false,
-        message: "Error in counting the active OrgType",
-        error,
-      });
-    }
-  };
-  */
-  
-  
-  

@@ -25,6 +25,29 @@ app.use(bodyParser.json());
 
 app.use('/uploads', express.static('uploads'));
 
+/*
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/")
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "-" + Date.now() + "-" + file.originalname);
+  },
+});
+
+
+const uploadStorage = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === 'logo' || file.fieldname === 'document') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid field name for file upload'), false);
+    }
+  },
+});
+*/
+
 //GLOBAL MIDDLEWARE
 
 const limiter = rateLimit({
@@ -34,8 +57,6 @@ const limiter = rateLimit({
 });
 
 app.use("/", limiter);
-
-
 
 
 //IMPORT ROUTES 
@@ -49,7 +70,7 @@ const userRole = require('./app/routes/userRole');
 app.use("/userroles",userRole);
 
 const enquirySupportRoutes = require('./app/routes/enquirySupport');
-app.use("/supportEnquiry",enquirySupportRoutes);
+app.use("/support",enquirySupportRoutes);
 
 const enquirySource = require('./app/routes/enquirySource');
 app.use("/enquirySource" ,enquirySource);
@@ -59,7 +80,6 @@ app.use("/enquirymode",EnquiryMode)
 
 const enquiryType = require('./app/routes/enquiryType');
 app.use("/enquiryType",enquiryType)
-
 
 const OrgType = require('./app/routes/orgType');
 app.use("/orgType",OrgType);
@@ -73,10 +93,14 @@ app.use("/productService",ProductServices);
 const SupportType = require('./app/routes/supportType');
 app.use("/supportType",SupportType);
 
+const FollowUp = require('./app/routes/followUp');
+app.use("/followUp",FollowUp);
+
+const OrgProfile = require('./app/routes/orgProfile');
+app.use("/orgProfile",OrgProfile);
 
 //mongodb connection
 const dbConfig = require('./config/dbconfig');
-
 
 
 mongoose.Promise = global.Promise;

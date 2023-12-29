@@ -21,6 +21,7 @@ exports.CreateEnquiryType = async (req, res) => {
     const enquiryType = await new EnquiryType({
       name,
       descp,
+      status: 'new',
       createdBy :'admin',
       updatedBy :'admin',
       createdAt: new Date().toISOString(),
@@ -79,7 +80,7 @@ exports.UpdateEnquiryType = async (req, res) => {
 // Get all EnquiryTypes
 exports.GetAllEnquiryTypes = async (req, res) => {
   try {
-    const enquiryType = await EnquiryType.find().sort({createdAt:-1});
+    const enquiryType = await EnquiryType.find({isDeleted:false}).sort({createdAt:-1});
     res.status(200).send({
       success: true,
       message: "All EnquiryTypes",

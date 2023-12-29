@@ -5,13 +5,12 @@ const SupportType = require("../models/supportType");
 exports.CreateSupportType = async (req, res) => {
   try {
 
-    const { name, descp, isActive } = req.body;
-
+    const { name, descp} = req.body;
 
     const supportType = await new SupportType({
       name,
       descp,
-      isActive: Boolean(isActive) ,
+      isActive: true ,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: 'admin',
@@ -39,7 +38,7 @@ exports.CreateSupportType = async (req, res) => {
 // Get all Users
 exports.GetAllSupportType = async (req, res) => {
   try {
-    const supportType = await SupportType.find().sort({ createdAt: -1 })
+    const supportType = await SupportType.find({isDeleted:false}).sort({ createdAt: -1 })
       .populate('createdBy')
       .populate('updatedBy');
     res.status(200).send({
@@ -64,7 +63,6 @@ exports.GetAllSupportType = async (req, res) => {
 exports.GetSingleSupportType = async (req, res) => {
   try {
     const { id } = req.params;
-
 
     if (!id || id.toLowerCase() === 'null') {
       return res.status(400).send({
@@ -142,8 +140,8 @@ exports.softDelete = async (req, res) => {
       id,
       { isDeleted: true, updatedAt: Date.now() },
       { new: true, runValidators: true }
-    ).populate('CreatedBy')
-      .populate('UpdatedBy');
+    ).populate('createdBy')
+      .populate('updatedBy');
 
     if (!supportType) {
       return res.status(404).send({
@@ -168,83 +166,3 @@ exports.softDelete = async (req, res) => {
 };
 
 
-
-// Delete User by ID
-/*exports.DeleteEnquirySupport = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const enquirySupport = await EnquirySupport.findByIdAndDelete(id);
-
-
-      if (!enquirySupport) {
-        return res.status(404).send({
-          success: false,
-          message: "EnquirySupport not found",
-        });
-      }
-
-
-      res.status(200).send({
-        success: true,
-        message: "Successfully deleted the enquirySupport",
-        enquirySupport,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        success: false,
-        message: "Error in deleting the enquirySupport",
-        error,
-      });
-    }
-  };
-  
-*/
-
-
-
-
-// search enquirysupport 
-
-
-exports.searchSupportType = async (req, res) => {
-  try {
-
-    const { keyword } = req.params;
-
-    console.log('Received search keyword:', keyword);
-    const results = await SupportType.find({ $or: [{ name: { $regex: keyword, $options: "i" } }] })
-
-    res.json(results)
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      success: false,
-      message: "Sry cannot find what you are looking for",
-      error,
-    });
-  }
-}
-
-
-// GET FULL COUNT OF user
-exports.findTotalSupportCount = async (req, res) => {
-  try {
-    const { keyword } = req.query;
-    const query = keyword ? { name: { $regex: keyword, $options: 'i' } } : {};
-
-    const supportType = await SupportType.countDocuments(query);
-    res.status(200).send({
-      success: true,
-      message: "Successfully found the count",
-      supportType,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Error in counting the supportType",
-      error,
-    });
-  }
-};

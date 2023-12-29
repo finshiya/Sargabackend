@@ -1,19 +1,27 @@
 const mongoose = require("mongoose");
 
-const EnquirySchema = new mongoose.Schema({
-name: {
-    type: String,
-    required: true,
-  },
- descp :{
-  type: String,
-  required: true,
+const SupportSchema = new mongoose.Schema({
+
+supportFrom:{
+  type:String,
+  default:'admin'
 },
- isActive:{
-  type: Boolean,
-  required: true,
-  default:true
-  
+supportTo:{
+  type: mongoose.Schema.Types.ObjectId,
+    ref: 'user', 
+   required:true
+},
+supportType:{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'SupportType', 
+ required:true
+},
+status: {
+  type: String,
+  enum:['new','active','pending','blocked','converted']
+  },
+remarks:{
+  type:String
 },
 
   createdAt: {
@@ -43,6 +51,6 @@ isDeleted: {
 
 });
 
-const EnquirySupport = mongoose.model("EnquirySupport", EnquirySchema);
+const EnquirySupport = mongoose.model("EnquirySupport", SupportSchema);
 
 module.exports = EnquirySupport;

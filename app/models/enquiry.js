@@ -4,7 +4,13 @@ const enquirySchema = new mongoose.Schema({
 
   enqNo:{
   type:Number,
+  unique:true
   },
+  followUpData: 
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FollowUp",
+    },
   enqSource: {
     type: mongoose.Schema.Types.ObjectId ,
     ref:"EnquirySource" 
@@ -32,7 +38,7 @@ const enquirySchema = new mongoose.Schema({
     type: String ,
     required:true
   },
-  lName: { 
+    lName: { 
     type: String ,
     required:true
   },
@@ -44,8 +50,8 @@ const enquirySchema = new mongoose.Schema({
       type: String,
       unique:true,
       required:true
-   
      },
+     
      mobile:{
       type:Number,
       required:true
@@ -70,11 +76,11 @@ const enquirySchema = new mongoose.Schema({
      ref: 'Product' 
   
     },
-
-    enqStatus: {
+    status: {
       type: String,
-      default:"open"
+      enum:['new','active','pending','blocked','converted']
       },
+
       referenceId:{
       
         type: String
