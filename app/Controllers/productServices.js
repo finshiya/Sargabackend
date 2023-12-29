@@ -12,9 +12,9 @@ exports.CreateProduct = async (req, res) => {
     const product = await new Product({ 
       name,
       descp,
-      isActive: Boolean(isActive) ,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      isActive: true ,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       createdBy: 'admin',
       updatedBy: 'admin',
       isDeleted: false
@@ -39,7 +39,7 @@ exports.CreateProduct = async (req, res) => {
 // Get all Users
 exports.GetAllProduct = async (req, res) => {
     try {
-      const product = await Product.find().sort({ createdAt :-1})  
+      const product = await Product.find({isDeleted:false}).sort({ createdAt :-1})  
       .populate('createdBy')
       .populate('updatedBy') ;
       res.status(200).send({

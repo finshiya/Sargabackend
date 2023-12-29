@@ -5,15 +5,18 @@ const mongoose = require("mongoose");
 // Create User
 exports.CreateEnquirySupport = async (req, res) => {
   try {
-    const { name, descp, isActive } = req.body;
+    const {supportFrom,supportTo,supportType,remarks } = req.body;
 
 
     const enquirySupport = await new EnquirySupport({
-      name,
-      descp,
-      isActive: Boolean(isActive) ,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    
+      supportFrom,
+      supportTo,
+      supportType,
+      status :'new',
+      remarks,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       createdBy: 'admin',
       updatedBy: 'admin',
       isDeleted: false
@@ -38,7 +41,11 @@ exports.CreateEnquirySupport = async (req, res) => {
 // Get all Users
 exports.GetAllEnquirySupport = async (req, res) => {
   try {
-    const enquirySupport = await EnquirySupport.find().sort({ createdAt: -1 });
+    const enquirySupport = await EnquirySupport.find({isDeleted:false}).sort({ createdAt: -1 })
+    .populate('supportTo')
+    .populate('supportType');
+   
+
     res.status(200).send({
       success: true,
       message: "All enquirySupport",
@@ -70,7 +77,9 @@ exports.GetSingleEnquirySupport = async (req, res) => {
       });
     }
 
-    const enquirySupport = await EnquirySupport.findById(id);
+    const enquirySupport = await EnquirySupport.findById(id)  
+    .populate('supportTo')
+    .populate('supportType');
 
     if (!enquirySupport) {
       return res.status(404).send({
@@ -104,7 +113,9 @@ exports.UpdateEnquirySupport = async (req, res) => {
     const enquirySupport = await EnquirySupport.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
-    });
+    }) .populate('supportTo')
+     .populate('supportType');
+   
 
     if (!enquirySupport) {
       return res.status(404).send({
@@ -136,7 +147,8 @@ exports.softDelete = async (req, res) => {
       id,
       { isDeleted: true, updatedAt: Date.now() },
       { new: true, runValidators: true }
-    );
+    ).populate('supportTo')
+    .populate('supportType');
 
     if (!enquirySupport) {
       return res.status(404).send({
@@ -159,65 +171,6 @@ exports.softDelete = async (req, res) => {
     });
   }
 };
-
-
-
-// Delete User by ID
-/*exports.DeleteEnquirySupport = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const enquirySupport = await EnquirySupport.findByIdAndDelete(id);
-
-
-      if (!enquirySupport) {
-        return res.status(404).send({
-          success: false,
-          message: "EnquirySupport not found",
-        });
-      }
-
-
-      res.status(200).send({
-        success: true,
-        message: "Successfully deleted the enquirySupport",
-        enquirySupport,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).send({
-        success: false,
-        message: "Error in deleting the enquirySupport",
-        error,
-      });
-    }
-  };
-  
-*/
-
-
-
-
-// search enquirysupport 
-
-
-exports.searchEnquirySupportController = async (req, res) => {
-  try {
-
-    const { keyword } = req.params;
-
-    console.log('Received search keyword:', keyword);
-    const results = await EnquirySupport.find({ $or: [{ name: { $regex: keyword, $options: "i" } }] })
-
-    res.json(results)
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({
-      success: false,
-      message: "Sry cannot find what you are looking for",
-      error,
-    });
-  }
-}
 
 
 // GET FULL COUNT OF user
