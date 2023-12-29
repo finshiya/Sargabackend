@@ -7,6 +7,6 @@ router.post('/', enquiryModeController.createEnquiryModeController);
 router.get('/', enquiryModeController.getAllEnquirymodesController);
 router.get('/:id', enquiryModeController.getSingleEnquiryModeController);
 router.put('/:id', enquiryModeController.updateEnquiryModeController);
-router.delete('/:id', enquiryModeController.deleteEnquiryModeController);
+router.patch('/:id', enquiryModeController.softDeleteEnquirymode);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../Controllers/user'); 
-const { requireSignIn,isAdmin,isVendor,isLicensy} = require( "../middlewares/authMiddleware");
+const { requireSignIn,isAdmin,isVendor,isLicensee} = require( "../middlewares/authMiddleware");
 
 
 
@@ -22,7 +22,7 @@ router.get('/current',  requireSignIn ,UserController.currentUserController);
 
 //protected user route auth
 
-router.get('/licensy-auth',requireSignIn, (req,res)=>{
+router.get('/licensee-auth',requireSignIn,isLicensee, (req,res)=>{
   res.status(200).send({ok:true});
 })
 

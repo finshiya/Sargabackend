@@ -6,7 +6,7 @@ const rateLimit =require('express-rate-limit');
 const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
 const multer = require('multer');
-
+const path = require("path")
 
 
 const dotenv = require("dotenv").config();
@@ -22,31 +22,9 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 app.use('/uploads', express.static('uploads'));
 
-/*
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/")
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now() + "-" + file.originalname);
-  },
-});
 
-
-const uploadStorage = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (file.fieldname === 'logo' || file.fieldname === 'document') {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid field name for file upload'), false);
-    }
-  },
-});
-*/
 
 //GLOBAL MIDDLEWARE
 
@@ -60,6 +38,12 @@ app.use("/", limiter);
 
 
 //IMPORT ROUTES 
+const userProfileRoutes = require('./app/routes/userProfile');
+app.use('/userProfile', userProfileRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/public/Images', express.static(path.join(__dirname, 'public/Images')));
+
+
 const enquiry = require('./app/routes/enquiry');
 app.use("/enquiries",enquiry);
 

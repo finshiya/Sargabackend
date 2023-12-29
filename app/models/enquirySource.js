@@ -25,6 +25,10 @@ const enquirySourceSchema = new mongoose.Schema({
   updatedBy: {
     type: String, // If this is meant to store user information, consider using a reference to a user model.
   },
+  isDeleted:{
+    type:Boolean,
+    default:false
+  }
 });
 
 const EnquirySource = mongoose.model('EnquirySource', enquirySourceSchema);

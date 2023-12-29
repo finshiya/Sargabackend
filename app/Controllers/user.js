@@ -2,14 +2,30 @@ const User = require("../models/user");
 const { hashPassword,comparePassword } = require("../helpers/authHelper");
 const JWT =  require('jsonwebtoken');
 
-
+ 
 // Create User
 exports.CreateUserController = async (req, res) => {
   try {
-    const { fname,lname, email , mobile, password,userType,  userRoles,} = req.body;
-    if (!fname || !lname || !email  ||  !mobile ||  !password || !userRoles ) {
-      return res.status(400).send({ message: "All required fields must be provided" });
+    const { fname,lname, email , mobile, password,userType,userRoles} = req.body;
+
+    if (!fname  ) {
+      return res.send({ error: "FirstName is Required" });
     }
+    if (!lname  ) {
+      return res.send({ error: "LastName is Required" });
+    }
+
+    if (!email  ) {
+      return res.send({ error: "Email is Required" });
+    }
+    if (!mobile  ) {
+      return res.send({ error: "Mobile is Required" });
+    }
+    
+    if (!password  ) {
+      return res.send({ error: "Password is Required" });
+    }
+
 
     const existingUser = await User.findOne({ email });
 
@@ -70,7 +86,6 @@ if(!email|| !password){
         message:"Invalid email or password"
     })
 }
-
 //check  user
 const user = await User.findOne({email})
 
@@ -90,9 +105,7 @@ if(!match){
         message:'Invalid Password'
     })
 }
-
 //token
-
 const token = await JWT.sign(
     { _id:user._id},
     process.env.JWT_SECRET,

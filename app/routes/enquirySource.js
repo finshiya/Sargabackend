@@ -19,6 +19,6 @@ router.put('/:id', enquirySourceController.UpdateEnquirySourceController );
 router.get('/:id', enquirySourceController.GetSingleEnquirySourceController);
 
 // Delete an enquiry by ID
-router.delete('/:id',enquirySourceController.DeleteEnquirySourceController);
+router.patch('/:id',enquirySourceController.softDeleteEnquirysource);
 
 module.exports = router;

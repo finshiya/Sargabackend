@@ -19,6 +19,6 @@ router.put('/:id', userRoleController.UpdateUserRoleController );
 router.get('/:id', userRoleController.GetSingleUserRoleController);
 
 // Delete an userrole by ID
-router.delete('/:id',userRoleController.SoftDelete);
+router.patch('/:id',userRoleController.softDeleteUserRole);
 
 module.exports = router;

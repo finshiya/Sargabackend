@@ -26,6 +26,7 @@ exports.CreateEnquiryType = async (req, res) => {
       updatedBy :'admin',
       createdAt: new Date().toISOString(),
       updatedAt:  new Date().toISOString(),
+      isDeleted: false
       
     }).save();
 
