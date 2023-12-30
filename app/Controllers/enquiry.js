@@ -39,8 +39,6 @@ exports.CreateEnquiryController = async (req, res) => {
 
  // Fetch the maximum existing enqNo
  const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
-
- // Increment the maximum enqNo or start from 1 if no records exist
  const newEnqNo = maxEnqNo.length > 0 ? maxEnqNo[0].enqNo + 1 : 1;
 
 

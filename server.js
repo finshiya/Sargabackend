@@ -44,6 +44,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/public/Images', express.static(path.join(__dirname, 'public/Images')));
 
 
+
 const enquiry = require('./app/routes/enquiry');
 app.use("/enquiries",enquiry);
 

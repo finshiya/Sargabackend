@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   mobile: {
     type: String,
     required: true,
+    unique: true,
    
   },
  
@@ -57,9 +58,10 @@ const UserSchema = new mongoose.Schema({
     type:String,
    
   },
-  status:{
-    type:String,
-    
+  status: {
+    type: String,
+    enum:['new','active','pending','blocked','converted']
+  
   },
   crdtLmt:{
     type:Number,

@@ -49,6 +49,7 @@ exports.CreateUserController = async (req, res) => {
     password:hashedPassword,
     confirmPassword:hashedPassword,
     userType,
+    status :'new',
     userRoles,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
