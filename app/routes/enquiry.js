@@ -21,4 +21,7 @@ router.get('/:id', enquiryController.GetSingleEnquiryController);
 // Delete an enquiry by ID
 router.patch('/:id',enquiryController.softDelete);
 
+// Delete an enquiry by ID
+router.get('/total/count',enquiryController.enquiryCount);
+
 module.exports = router;

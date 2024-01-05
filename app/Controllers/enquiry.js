@@ -262,3 +262,21 @@ exports.softDelete = async (req, res) => {
   }
 };
 
+//enquiry count
+exports.enquiryCount = async(req,res)=>{
+
+  try {
+ const  enquiry = await Enquiry.find({}).countDocuments()
+ res.status(200).send({
+  success:true,
+  enquiry
+})
+  } catch (error) {
+      console.log(error);
+      res.status(500).send({
+          success:false,
+          message:"Error in getting count",
+          error
+      })
+}
+}
