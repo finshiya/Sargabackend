@@ -21,7 +21,7 @@ exports.CreateUserRoleController = async (req, res) => {
     const userRole = await new UserRole({
       name,
       desc,
-      status: "Pending", // Default status
+      status: "new", // Default status
       createdAt: new Date().toISOString(),
        updatedAt: new Date().toISOString(),
        createdBy :'admin',

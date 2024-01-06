@@ -12,8 +12,8 @@ const userRoleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Pending', // 'Pending', 'Contacted', 'Closed'
-  },
+    enum:['new','active','pending','blocked','converted']
+    },
   createdAt: {
     type: Date,
     default: Date.now,

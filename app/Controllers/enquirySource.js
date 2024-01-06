@@ -21,7 +21,7 @@ exports.CreateEnquirySourceController = async (req, res) => {
     const enquirySource = await new EnquirySource({
       name,
       desc,
-      status: "Pending", // Default status
+      status: "new", // Default status
       createdAt: new Date(), // Set the creation date/time
       updatedBy: req.id, // Set the user ID of the person making the request
       isDeleted: false
@@ -83,7 +83,7 @@ exports.UpdateEnquirySourceController = async (req, res) => {
 // Get all Enquiries
 exports.GetAllEnquiriesSourceController = async (req, res) => {
   try {
-    const enquiriesSource = await EnquirySource.find();
+    const enquiriesSource = await EnquirySource.find().sort({createdAt:-1});
     res.status(200).send({
       success: true,
       message: "All enquiries",

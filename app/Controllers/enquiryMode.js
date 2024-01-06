@@ -23,7 +23,7 @@ exports.createEnquiryModeController = async (req, res) => {
     const enquiryMode = await new Enquirymode({
       name,
       desc,
-      status: 'Pending',
+      status: 'new',
       createdAt: new Date(),
       updatedBy: req.id,
       isDeleted: false
@@ -81,7 +81,7 @@ exports.updateEnquiryModeController = async (req, res) => {
 // Get all Enquiry Modes
 exports.getAllEnquirymodesController = async (req, res) => {
   try {
-    const enquiryModes = await Enquirymode.find();
+    const enquiryModes = await Enquirymode.find().sort({ createdAt: -1 });
     res.status(200).send({
       success: true,
       message: 'All enquiry modes',

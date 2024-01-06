@@ -13,7 +13,7 @@ const enquirymodeSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Pending',
+    enum:['new','active','pending','blocked','converted']
   },
   createdAt: {
     type: Date,
