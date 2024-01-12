@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const enquirySchema = new mongoose.Schema({
 
   enqNo:{
-  type:Number,
+  type:String,
   unique:true
   },
   followUpData: 
@@ -107,7 +107,7 @@ const enquirySchema = new mongoose.Schema({
   /*  type: mongoose.Schema.Types.ObjectId,
     ref: 'user' */
     type:String,
-    default:'admin'
+    default:'Admin'
     
   },
 

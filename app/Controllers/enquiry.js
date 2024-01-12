@@ -38,8 +38,16 @@ exports.CreateEnquiryController = async (req, res) => {
     }
 
  // Fetch the maximum existing enqNo
- const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
- const newEnqNo = maxEnqNo.length > 0 ? maxEnqNo[0].enqNo + 1 : 1;
+//  const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
+//  const newEnqNo = maxEnqNo.length > 0 ? maxEnqNo[0].enqNo + 1 : 1;
+const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
+  let newEnqNo;
+  if (maxEnqNo.length > 0) {
+    const numericPart = parseInt(maxEnqNo[0].enqNo.slice(3), 10);
+    newEnqNo = `Enq${(numericPart + 1).toString().padStart(2, '0')}`;
+  } else {
+    newEnqNo = 'Enq0';
+  }
 
 
     const enquiry = await new Enquiry({
