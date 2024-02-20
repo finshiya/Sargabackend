@@ -1,4 +1,4 @@
-const FollowUp = require("../models/followUp");
+const Order = require("../models/order");
 const mongoose = require("mongoose");
 const moment = require("moment");
 /*
@@ -10,15 +10,15 @@ function formatDate(date) {
   return `${day}-${month}-${year}`;
 }
 */
-// Create FollowUp
-exports.CreateFollowUp = async (req, res) => {
+// Create order
+exports.CreateOrder = async (req, res) => {
   try {
-    const { enqId, followUpDetails, nextContactDate, remarks } = req.body;
+    const { enqId, orderDetails, nextContactDate, remarks } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(enqId)) {
       return res.status(400).send({
         success: false,
-        message: "Invalid Enquiry ID provided",
+        message: "Invalid Order ID provided",
       });
     }
  /*   const parsedNextContactDate = new Date(nextContactDate);
@@ -31,10 +31,29 @@ exports.CreateFollowUp = async (req, res) => {
     }
 */
 
-    const followUp = await new FollowUp({
+
+const maxEnqNo = await Order.find().sort({ OrderId: -1 }).limit(1);
+
+let newEnqNo;
+if (maxEnqNo.length > 0) {
+  // Extract the number part of the enqNo and increment it
+  const currentEnqNo = parseInt(maxEnqNo[0].OrderId.split('-')[1]);
+  newEnqNo = `ORD-${currentEnqNo + 1}`;
+} else {
+  // If no existing enqNo, start with ENQ-0
+  newEnqNo = "ORD-0";
+}
+
+//     const followUp = await new FollowUp({
+//       enqId,
+//       enqTo,
+//       OrderId: newEnqNo ,
+
+    const order = await new Order({
+      OrderId: newEnqNo ,
       enqId,
-      followUpDetails,
-      nextContactDate  ,
+      orderDetails,
+      nextContactDate ,
       status :"new",
       remarks,
       createdBy: 'admin',
@@ -44,45 +63,45 @@ exports.CreateFollowUp = async (req, res) => {
 
     res.status(201).send({
       success: true,
-      message: "Successfully created a follow-up",
-      followUp 
+      message: "Successfully created a order",
+      order 
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in creating a follow-up",
+      message: "Error in creating a order",
       error,
     });
   }
 };
 
-// Get all FollowUps
-exports.GetAllFollowUps = async (req, res) => {
+// Get all Order
+exports.GetAllOrders = async (req, res) => {
   try {
-    const followUp = await FollowUp.find({isDeleted:false}).sort({ createdAt: -1 })
+    const order = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
       .populate('enqId'); 
 
 
 
     res.status(200).send({
       success: true,
-      message: "All follow-ups",
-      followUp
+      message: "All order",
+      order
       
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in getting all follow-ups",
+      message: "Error in getting all orders",
       error,
     });
   }
 };
 
-// Get FollowUp by id
-exports.GetSingleFollowUp = async (req, res) => {
+// Get Order by id
+exports.GetSingleOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -93,124 +112,117 @@ exports.GetSingleFollowUp = async (req, res) => {
       });
     }
 
-    const followUp = await FollowUp.findById(id)
+    const order = await Order.findById(id)
       .populate('enqId');  
 
-    if (!followUp) {
+    if (!order) {
       return res.status(404).send({
         success: false,
-        message: "Follow-up not found",
+        message: "Order not found",
       });
     }
     
 
     res.status(200).send({
       success: true,
-      message: "Getting single follow-up successfully",
-      followUp 
+      message: "Getting single order successfully",
+      order 
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in getting a single follow-up",
+      message: "Error in getting a single order",
       error,
     });
   }
 };
 
-// Get all FollowUps for a specific Enquiry
-exports.GetAllFollowUpsForEnquiry = async (req, res) => {
+// Get all order for a specific Enquiry
+// Get all FollowUps
+exports.GetAllOrders = async (req, res) => {
   try {
-    const { enquiryId } = req.params;
+    const orders = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
+      .populate('enqId'); 
 
-    if (!mongoose.Types.ObjectId.isValid(enquiryId)) {
-      return res.status(400).send({
-        success: false,
-        message: "Invalid Enquiry ID provided",
-      });
-    }
 
-    const followUp = await FollowUp.find({ enqId: enquiryId })
-      .sort({ createdAt: -1 });
-
-    
 
     res.status(200).send({
       success: true,
-      message: "All follow-ups for the Enquiry",
-      followUp 
+      message: "All Orders",
+      orders
+      
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in getting follow-ups for the Enquiry",
+      message: "Error in getting all Orders",
       error,
     });
   }
 };
+ 
 
-
-// Update FollowUp by id
-exports.UpdateFollowUp = async (req, res) => {
+// Update Order by id
+exports.UpdateOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
 
-    const followUp = await FollowUp.findByIdAndUpdate(id, updatedData, {
+    const order = await Order.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     }).populate('enqId');
 
-    if (!followUp) {
+    if (!order) {
       return res.status(404).send({
         success: false,
-        message: "Follow-up not found",
+        message: "Order not found",
       });
     }
 
     res.status(200).send({
       success: true,
-      message: "Successfully updated the follow-up",
-      followUp: updatedData,
+      message: "Successfully updated the order",
+      order: updatedData,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in updating the follow-up",
+      message: "Error in updating the order",
       error,
     });
   }
 };
 
-// Soft Delete FollowUp by ID
-exports.softDeleteFollowUp = async (req, res) => {
+// Soft Delete order by ID
+exports.softDeleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const followUp = await FollowUp.findByIdAndUpdate(
+    const order = await Order.findByIdAndUpdate(
       id,
       { isDeleted: true, updatedAt: Date.now() },
       { new: true, runValidators: true }
     ).populate('enqId'); 
-    if (!followUp) {
+    if (!order) {
       return res.status(404).send({
         success: false,
-        message: 'Follow-up not found',
+        message: 'Order not found',
       });
     }
 
     res.status(200).send({
       success: true,
-      message: 'Successfully soft-deleted the follow-up',
-      followUp,
+      message: 'Successfully soft-deleted the Order',
+      order,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: 'Error in soft-deleting the follow-up',
+      message: 'Error in soft-deleting the order',
       error,
     });
   }

@@ -45,14 +45,14 @@ app.use('/public/Images', express.static(path.join(__dirname, 'public/Images')))
 
 
 
-const enquiry = require('./app/routes/enquiry');
-app.use("/enquiries",enquiry);
+const customer = require('./app/routes/customer');
+app.use("/customers",customer);
 
 const user= require('./app/routes/user');
 app.use("/users",user);
 
-const userRole = require('./app/routes/userRole');
-app.use("/userroles",userRole);
+// const userRole = require('./app/routes/userRole');
+// app.use("/userroles",userRole);
 
 const enquirySupportRoutes = require('./app/routes/enquirySupport');
 app.use("/support",enquirySupportRoutes);
@@ -78,11 +78,14 @@ app.use("/productService",ProductServices);
 const SupportType = require('./app/routes/supportType');
 app.use("/supportType",SupportType);
 
-const FollowUp = require('./app/routes/followUp');
-app.use("/followUp",FollowUp);
+const Order = require('./app/routes/order');
+app.use("/orders",Order);
 
 const OrgProfile = require('./app/routes/orgProfile');
 app.use("/orgProfile",OrgProfile);
+
+const paymentRoutes = require('./app/routes/collection');
+app.use("/collctions",paymentRoutes);
 
 //mongodb connection
 const dbConfig = require('./config/dbconfig');

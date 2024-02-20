@@ -5,9 +5,21 @@ const Product = require("../models/productServices");
 // Create User
 exports.CreateProduct = async (req, res) => {
     try {
-      const { name,descp,isActive} = req.body;
+      const { name,descp} = req.body;
 
-     
+      if (!name || !descp) {
+        return res.status(400).send({ message: 'All required fields must be provided' });
+      }
+  
+      const existingProductServices = await Product.findOne({ name });
+  
+      if (existingProductServices) {
+        return res.status(409).send({
+          success: false,
+          message: 'Product Services with this name already exists',
+        });
+      }
+  
   
     const product = await new Product({ 
       name,

@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-const followUpSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
 
 enqId:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Enquiry', 
+    ref: 'Customer', 
     required : true
 },
-
-followUpDetails:{
+OrderId: {
+  type: String,
+  unique: true
+},
+orderDetails:{
   type: String, 
 },
 nextContactDate: {
@@ -51,6 +54,6 @@ isDeleted: {
 
 });
 
-const FollowUp = mongoose.model("FollowUp", followUpSchema);
+const Order = mongoose.model("Order", orderSchema);
 
-module.exports = FollowUp;
+module.exports = Order;

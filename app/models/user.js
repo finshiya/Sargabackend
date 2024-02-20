@@ -41,11 +41,16 @@ const UserSchema = new mongoose.Schema({
   },
     
   userRoles:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserRole', 
-   required:true
     
-  },
+      type: String,
+      required: true,
+      enum:['admin', 'licensee','vendor','operator','accountant']
+    },
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'UserRole', 
+  //  required:true
+    
+ 
   deviceId:{
     type:String,
    

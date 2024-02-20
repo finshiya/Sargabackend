@@ -3,9 +3,24 @@ const SupportType = require("../models/supportType");
 
 // Create User
 exports.CreateSupportType = async (req, res) => {
-  try {
 
-    const { name, descp} = req.body;
+  try {
+    const { name, descp } = req.body;
+
+    if (!name || !descp) {
+      return res.status(400).send({ message: 'All required fields must be provided' });
+    }
+
+    
+    const existingEnquiryType = await SupportType.findOne({ name });
+
+    if (existingEnquiryType) {
+      return res.status(409).send({
+        success: false,
+        message: 'Enquiry mode with this name already exists',
+      });
+    }
+
 
     const supportType = await new SupportType({
       name,

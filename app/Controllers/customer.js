@@ -1,22 +1,26 @@
-const Enquiry = require("../models/enquiry");
+
+const Customer = require("../models/customer");
 const cron = require('node-cron');
-// Create Enquiry
-exports.CreateEnquiryController = async (req, res) => {
+
+exports.CreateCustomerController = async (req, res) => {
   try {
     const {
      
       enqSource,
       enqType,
       enqMode,
-      supportType,
-      enqDescp,
+      custDescp,
       fName,
       lName,
       gender,
       email,
       mobile,
+      wtsApp,
+      address,
       district,
       location,
+      landMark,
+      pincode,
       state,
       leadQuality,
       enqTo,
@@ -24,46 +28,50 @@ exports.CreateEnquiryController = async (req, res) => {
       remarks,
     } = req.body;
 
-    if ( !enqDescp || !fName || !lName || !email ||!mobile || !location ) {
+    if (  !fName || !lName || !email ||!mobile || !location ) {
       return res.status(400).send({ message: "All required fields must be provided" });
     }
 
-    const existingEnquiry = await Enquiry.findOne({email});
+    const existingCustomer = await Customer.findOne({email});
 
-    if (existingEnquiry) {
+    if (existingCustomer) {
       return res.status(200).send({
         success: true,
-        message: "Enquiry with this email already exists",
+        message: "Customer with this email already exists",
       });
     }
 
- // Fetch the maximum existing enqNo
-//  const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
-//  const newEnqNo = maxEnqNo.length > 0 ? maxEnqNo[0].enqNo + 1 : 1;
-const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
-  let newEnqNo;
-  if (maxEnqNo.length > 0) {
-    const numericPart = parseInt(maxEnqNo[0].enqNo.slice(3), 10);
-    newEnqNo = `Enq${(numericPart + 1).toString().padStart(2, '0')}`;
-  } else {
-    newEnqNo = 'Enq0';
-  }
 
 
-    const enquiry = await new Enquiry({
+const maxEnqNo = await Customer.find().sort({ enqNo: -1 }).limit(1);
+
+let newEnqNo;
+if (maxEnqNo.length > 0) {
+  // Extract the number part of the enqNo and increment it
+  const currentEnqNo = parseInt(maxEnqNo[0].enqNo.split('-')[1]);
+  newEnqNo = `CUST-${currentEnqNo + 1}`;
+} else {
+  // If no existing enqNo, start with ENQ-0
+  newEnqNo = 'CUST-0';
+}
+    const customer =  new Customer({
       enqNo: newEnqNo,
       enqSource,
       enqType,
       enqMode,
-      supportType,
-      enqDescp,
+      // supportType,
+      custDescp,
       fName,
       lName,
       gender,
       email,
+      wtsApp,
+      address,
       mobile,
+      landMark,
       district,
       location,
+      pincode,
       state,
       leadQuality,
       enqTo,
@@ -79,8 +87,8 @@ const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
 
     res.status(201).send({
       success: true,
-      message: "Successfully created an enquiry",
-      enquiry,
+      message: "Successfully created an customer",
+      customer,
     });
   } catch (error) {
     console.log(error);
@@ -95,7 +103,7 @@ const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
 
     res.status(500).send({
       success: false,
-      message: "Error in creating an enquiry",
+      message: "Error in creating an customer",
       error,
     });
   }
@@ -104,22 +112,22 @@ const maxEnqNo = await Enquiry.find().sort({ enqNo: -1 }).limit(1);
 // Function to check and update the status
 const checkAndUpdateStatus = async () => {
   try {
-    const enquiries = await Enquiry.find({ status: 'new', isDeleted: false });
+    const enquiries = await Customer.find({ status: 'new', isDeleted: false });
 
-    enquiries.forEach(async (enquiry) => {
-      const createdDate = new Date(enquiry.createdAt);
+    enquiries.forEach(async (customer) => {
+      const createdDate = new Date(customer.createdAt);
       const currentDate = new Date();
 
       // Check if the created date is in the future
       if (createdDate > currentDate) {
-        console.warn(`Enquiry ${enquiry._id} has a future created date.`);
+        console.warn(`Customer ${customer._id} has a future created date.`);
         return;
       }
 
       const timeDifference = currentDate - createdDate;
 
       if (timeDifference > 24 * 60 * 60 * 1000) {
-        await Enquiry.findByIdAndUpdate(enquiry._id, { status: 'pending' });
+        await Customer.findByIdAndUpdate(customer._id, { status: 'pending' });
       }
     });
   } catch (error) {
@@ -134,20 +142,22 @@ cron.schedule('0 * * * *', () => {
 
 
 // Get all Enquiries
-exports.GetAllEnquiriesController = async (req, res) => {
+exports.GetAllCustomerController = async (req, res) => {
   try {
 
-    const { page = 1, pageSize = 5 } = req.query;
+    const { page = 1, pageSize = [] } = req.query;
     const skip = (page - 1) * pageSize;
-    const enquiry = await Enquiry.find({isDeleted:false}).sort({ createdAt :-1}).skip(skip).limit(pageSize)
+    const customer = await Customer.find({isDeleted:false}).sort({ createdAt :-1}).skip(skip).limit(pageSize)
     .populate('followUpData', '_id')
     .populate('enqSource')
     .populate('enqType')
+
+    
     .populate('enqMode')
     .populate('enqTo')
-    .populate('supportType');
+    // .populate('supportType');
 
-    const formattedEnquiries = enquiry.map((enq) => ({
+    const formattedEnquiries = customer.map((enq) => ({
       ...enq.toObject(),
       followUpDataPrsnt: enq.followUpData && enq.followUpData.length > 0,
     }));
@@ -157,7 +167,7 @@ exports.GetAllEnquiriesController = async (req, res) => {
     res.status(200).send({
       success: true,
       message: "All enquiries",
-      enquiry:formattedEnquiries,
+      customer:formattedEnquiries,
     });
   } catch (error) {
     console.log(error);
@@ -169,115 +179,115 @@ exports.GetAllEnquiriesController = async (req, res) => {
   }
 };
 
-// Get Single Enquiry by ID
-exports.GetSingleEnquiryController = async (req, res) => {
+// Get Single customer by ID
+exports.GetSingleCustomerController = async (req, res) => {
 
   try {
       const {id} = req.params.id;
 
-    const enquiry = await Enquiry.findById(id)
+    const customer = await Customer.findById(id)
     .populate('enqSource')
     .populate('enqType')
     .populate('enqMode')
     .populate('enqTo')
-    .populate('supportType');
+    // .populate('supportType');
 
-    if (!enquiry) {
+    if (!customer) {
       return res.status(404).send({
         success: false,
-        message: "Enquiry not found",
+        message: "Customer not found",
       });
     }
 
     res.status(200).send({
       success: true,
-      message: "Getting single enquiry successfully",
-      enquiry,
+      message: "Getting single customer successfully",
+      customer,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in getting a single enquiry",
+      message: "Error in getting a single customer",
       error,
     });
   }
 };
 
-// Update Enquiry
-exports.UpdateEnquiryController = async (req, res) => {
+// Update customer
+exports.UpdateCustomerController = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
 
-    const enquiry = await Enquiry.findByIdAndUpdate(id, updatedData, {
+    const customer = await Customer.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     }).populate('enqSource')
     .populate('enqType')
     .populate('enqMode')
-    .populate('enqTo')
-    .populate('supportType');
+ 
+    // .populate('supportType');
     
 
-    if (!enquiry) {
+    if (!customer) {
       return res.status(404).send({
         success: false,
-        message: "Enquiry not found",
+        message: "Customer not found",
       });
     }
 
     res.status(200).send({
       success: true,
-      message: "Successfully updated the enquiry",
-      enquiry: updatedData,
+      message: "Successfully updated the customer",
+      customer: updatedData,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in updating the enquiry",
+      message: "Error in updating the customer",
       error,
     });
   }
 };
 
-// Delete Enquiry by ID
+// Delete customer by ID
 exports.softDelete = async (req, res) => {
   try {
     const { id } = req.params;
-    const enquiry = await Enquiry.findByIdAndUpdate(id,
+    const customer = await Customer.findByIdAndUpdate(id,
     { isDeleted: true, updatedAt: Date.now() },
     { new: true, runValidators: true })
-    .populate('enqSource')
+    // .populate('enqSource')
     .populate('enqType')
     .populate('enqMode')
     .populate('enqTo')
-    .populate('supportType');
+    // .populate('supportType');
 
     res.status(200).send({
       success: true,
-      message: "Successfully deleted the enquiry",
-      enquiry,
+      message: "Successfully deleted the customer",
+      customer,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in deleting the enquiry",
+      message: "Error in deleting the customer",
       error,
     });
   }
 };
 
-//enquiry count
-exports.enquiryCount = async(req,res)=>{
+//customer count
+exports.customerCount = async(req,res)=>{
 
   try {
- const  enquiry = await Enquiry.find({}).countDocuments()
+ const  customer = await Customer.find({}).countDocuments()
  res.status(200).send({
   success:true,
-  enquiry
+  customer
 })
   } catch (error) {
       console.log(error);

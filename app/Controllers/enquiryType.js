@@ -12,7 +12,7 @@ exports.CreateEnquiryType = async (req, res) => {
     const existingEnquiryType = await EnquiryType.findOne({ name });
 
     if (existingEnquiryType) {
-      return res.status(200).send({
+      return res.status(409).send({
         success: true,
         message: "EnquiryType with this Name already exists",
       });
