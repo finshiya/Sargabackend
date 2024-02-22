@@ -8,6 +8,11 @@ enqId:{
     ref: 'Customer', 
     required : true
 },
+enqTo:{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Product', 
+  required : true
+},
 OrderId: {
   type: String,
   unique: true

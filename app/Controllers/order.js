@@ -52,6 +52,7 @@ if (maxEnqNo.length > 0) {
     const order = await new Order({
       OrderId: newEnqNo ,
       enqId,
+      enqTo,
       orderDetails,
       nextContactDate ,
       status :"new",
@@ -80,8 +81,10 @@ if (maxEnqNo.length > 0) {
 exports.GetAllOrders = async (req, res) => {
   try {
     const order = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
-      .populate('enqId'); 
-
+      // .populate('enqId')
+      // .populate('enqTo') ;
+      .populate('enqId')
+      .populate('enqTo')
 
 
     res.status(200).send({
@@ -113,7 +116,8 @@ exports.GetSingleOrder = async (req, res) => {
     }
 
     const order = await Order.findById(id)
-      .populate('enqId');  
+      .populate('enqId')
+      .populate('enqTo') ;  
 
     if (!order) {
       return res.status(404).send({
@@ -143,8 +147,8 @@ exports.GetSingleOrder = async (req, res) => {
 exports.GetAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
-      .populate('enqId'); 
-
+      .populate('enqId')
+      .populate('enqTo');
 
 
     res.status(200).send({
@@ -173,7 +177,8 @@ exports.UpdateOrder = async (req, res) => {
     const order = await Order.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
-    }).populate('enqId');
+    }).populate('enqId')
+    .populate('enqTo');
 
     if (!order) {
       return res.status(404).send({
@@ -205,7 +210,8 @@ exports.softDeleteOrder = async (req, res) => {
       id,
       { isDeleted: true, updatedAt: Date.now() },
       { new: true, runValidators: true }
-    ).populate('enqId'); 
+    ).populate('enqId')
+    .populate('enqTo'); 
     if (!order) {
       return res.status(404).send({
         success: false,

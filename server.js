@@ -85,7 +85,10 @@ const OrgProfile = require('./app/routes/orgProfile');
 app.use("/orgProfile",OrgProfile);
 
 const paymentRoutes = require('./app/routes/collection');
-app.use("/collctions",paymentRoutes);
+app.use("/collections",paymentRoutes);
+
+const allocation = require('./app/routes/allocation');
+app.use("/allocation",allocation);
 
 //mongodb connection
 const dbConfig = require('./config/dbconfig');
