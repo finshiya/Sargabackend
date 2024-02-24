@@ -13,7 +13,7 @@ router.get('/:id', orderController.GetSingleOrder);
 
 
 //get all order for enquiry
-router.get('/enqId/:enquiryId', orderController.GetAllOrders);
+router.get('/enqId/:enquiryId', orderController.GetAllOrdersEnq);
 
 // Update a Order by ID
 router.put('/:id', orderController.UpdateOrder);

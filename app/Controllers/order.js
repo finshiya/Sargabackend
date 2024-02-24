@@ -1,19 +1,11 @@
+// Update the Order model if necessary to include fields for expand row data
 const Order = require("../models/order");
 const mongoose = require("mongoose");
-const moment = require("moment");
-/*
-// Function to format date as "DD-MM-YYYY"
-function formatDate(date) {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-}
-*/
+
 // Create order
 exports.CreateOrder = async (req, res) => {
   try {
-    const { enqId, orderDetails, nextContactDate, remarks } = req.body;
+    const { enqId, enqTo, orderDetails, nextContactDate, remarks } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(enqId)) {
       return res.status(400).send({
@@ -21,77 +13,55 @@ exports.CreateOrder = async (req, res) => {
         message: "Invalid Order ID provided",
       });
     }
- /*   const parsedNextContactDate = new Date(nextContactDate);
+    const maxEnqNo = await Order.find().sort({ OrderId: -1 }).limit(1);
 
-    if (isNaN(parsedNextContactDate.getTime())) {
-      return res.status(400).send({
-        success: false,
-        message: "Invalid nextContactDate provided",
-      });
+    let newEnqNo;
+    if (maxEnqNo.length > 0) {
+      const currentEnqNo = parseInt(maxEnqNo[0].OrderId.split("-")[1]);
+      newEnqNo = `ORD-${currentEnqNo + 1}`;
+    } else {
+      newEnqNo = "ORD-0";
     }
-*/
-
-
-const maxEnqNo = await Order.find().sort({ OrderId: -1 }).limit(1);
-
-let newEnqNo;
-if (maxEnqNo.length > 0) {
-  // Extract the number part of the enqNo and increment it
-  const currentEnqNo = parseInt(maxEnqNo[0].OrderId.split('-')[1]);
-  newEnqNo = `ORD-${currentEnqNo + 1}`;
-} else {
-  // If no existing enqNo, start with ENQ-0
-  newEnqNo = "ORD-0";
-}
-
-//     const followUp = await new FollowUp({
-//       enqId,
-//       enqTo,
-//       OrderId: newEnqNo ,
 
     const order = await new Order({
-      OrderId: newEnqNo ,
+      OrderId: newEnqNo,
       enqId,
-      enqTo,
       orderDetails,
-      nextContactDate ,
-      status :"new",
+      nextContactDate,
       remarks,
-      createdBy: 'admin',
-      updatedBy: 'admin',
-
+      enqTo,
+      status: "new",
+      createdBy: "admin",
+      updatedBy: "admin",
     }).save();
 
     res.status(201).send({
       success: true,
-      message: "Successfully created a order",
-      order 
+      message: "Successfully created an order",
+      order,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in creating a order",
+      message: "Error in creating an order",
       error,
     });
   }
 };
 
-// Get all Order
+// Get all Order with expand row data
 exports.GetAllOrders = async (req, res) => {
   try {
-    const order = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
-      // .populate('enqId')
-      // .populate('enqTo') ;
-      .populate('enqId')
-      .populate('enqTo')
-
+    const orders = await Order.find({ isDeleted: false })
+      .sort({ createdAt: -1 })
+      .populate("enqId")
+      .populate("enqTo");
 
     res.status(200).send({
       success: true,
-      message: "All order",
-      order
-      
+      message: "All orders",
+      orders,
     });
   } catch (error) {
     console.log(error);
@@ -115,9 +85,7 @@ exports.GetSingleOrder = async (req, res) => {
       });
     }
 
-    const order = await Order.findById(id)
-      .populate('enqId')
-      .populate('enqTo') ;  
+    const order = await Order.findById(id).populate("enqId").populate("enqTo");
 
     if (!order) {
       return res.status(404).send({
@@ -125,12 +93,11 @@ exports.GetSingleOrder = async (req, res) => {
         message: "Order not found",
       });
     }
-    
 
     res.status(200).send({
       success: true,
       message: "Getting single order successfully",
-      order 
+      order,
     });
   } catch (error) {
     console.log(error);
@@ -143,30 +110,64 @@ exports.GetSingleOrder = async (req, res) => {
 };
 
 // Get all order for a specific Enquiry
-// Get all FollowUps
-exports.GetAllOrders = async (req, res) => {
+// Get all order for a specific Enquiry
+exports.GetAllOrdersEnq = async (req, res) => {
   try {
-    const orders = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
+    const { enquiryId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(enquiryId)) {
+      
+      return res.status(400).send({
+        success: false,
+        message: "Invalid Orders ID provided",
+      });
+    }
+
+    // const orders = await Order.find({ enqId: enquiryId }).sort({
+    //   createdAt: -1,
+    // });
+
+    const orders = await Order.find({ enqId: enquiryId }).sort({ createdAt: -1 })
       .populate('enqId')
       .populate('enqTo');
 
-
     res.status(200).send({
       success: true,
-      message: "All Orders",
-      orders
-      
+      message: "All orders for the enquiry",
+      orders,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in getting all Orders",
+      message: "Error in getting orders for the enquiry",
       error,
     });
   }
 };
- 
+
+
+// exports.GetAllOrdersEnq = async (req, res) => {
+//   try {
+//     const orders = await Order.find({isDeleted:false}).sort({ createdAt: -1 })
+//       .populate('enqId')
+//       .populate('enqTo');
+
+//     res.status(200).send({
+//       success: true,
+//       message: "All Orders",
+//       orders
+
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       success: false,
+//       message: "Error in getting all Orders",
+//       error,
+//     });
+//   }
+// };
 
 // Update Order by id
 exports.UpdateOrder = async (req, res) => {
@@ -177,8 +178,9 @@ exports.UpdateOrder = async (req, res) => {
     const order = await Order.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
-    }).populate('enqId')
-    .populate('enqTo');
+    })
+      .populate("enqId")
+      .populate("enqTo");
 
     if (!order) {
       return res.status(404).send({
@@ -210,25 +212,26 @@ exports.softDeleteOrder = async (req, res) => {
       id,
       { isDeleted: true, updatedAt: Date.now() },
       { new: true, runValidators: true }
-    ).populate('enqId')
-    .populate('enqTo'); 
+    )
+      .populate("enqId")
+      .populate("enqTo");
     if (!order) {
       return res.status(404).send({
         success: false,
-        message: 'Order not found',
+        message: "Order not found",
       });
     }
 
     res.status(200).send({
       success: true,
-      message: 'Successfully soft-deleted the Order',
+      message: "Successfully soft-deleted the Order",
       order,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: 'Error in soft-deleting the order',
+      message: "Error in soft-deleting the order",
       error,
     });
   }

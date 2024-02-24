@@ -17,7 +17,7 @@ const allocationSchema = new mongoose.Schema({
     // },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user" // Make sure this matches your user model name
+        ref: "user" 
     },
     remarks: {
         type: String

@@ -1,11 +1,12 @@
+// collection.js (payment schema)
+
 const mongoose = require('mongoose');
 
 const collectionSchema = new mongoose.Schema({
 
-  enqId: {
+  orders: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
-
+    ref: 'Order',
   },
   recieptId:{
     type: String,
@@ -40,3 +41,4 @@ const collectionSchema = new mongoose.Schema({
 const Collection = mongoose.model('Collection', collectionSchema);
 
 module.exports = Collection;
+

@@ -4,16 +4,14 @@ const Allocation = require('../models/allocation');
 // Create Allocation
 exports.createAllocationController = async (req, res) => {
   try {
-    const { user, remarks, customer, orders, enqTo } = req.body;
+    const { user, remarks } = req.body;
 
     if (!remarks || !user  ) {
       return res.status(400).send({ message: 'All required fields must be provided' });
     }
 
     const newAllocation = await new Allocation({
-      // enqTo,
-      // orders,
-      // customer,
+     
       user,
       remarks,
       createdAt: new Date(),
@@ -40,7 +38,7 @@ exports.createAllocationController = async (req, res) => {
 exports.updateAllocationController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user, remarks, customer, orders, enqTo} = req.body;
+    const { user, remarks} = req.body;
 
     const updatedAllocation = await Allocation.findByIdAndUpdate(
       id,
